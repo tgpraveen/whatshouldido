@@ -1,11 +1,16 @@
 import gflags
 import httplib2
 import json
+import urllib
 
 from apiclient.discovery import build
 from oauth2client.file import Storage
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.tools import run
+
+#Specific to Python 2.x
+#In Python 3.x the below line needs to be changed.
+#from urlparse import urlencode
 
 FLAGS = gflags.FLAGS
 
@@ -76,6 +81,40 @@ for ite in jsoncontent['items']:
 			break
 
 print primaryid
+body = {
+	'items': [
+	  {
+		  'id': primaryid
+		       }
+			    ],
+			     'timeMin': '2013-06-03T10:00:00.000-07:00',
+			     'timeMax': '2013-07-03T10:00:00.000-07:00'
+       }
+
+#body = {'timeMin': '2013-06-03T10:00:00.000-07:00'}
+#body = {'timeMin': '2013-06-03T10:00:00.000-07:00'}
+
+
+'''
+
+{
+      "items": [
+      {"id": primaryid}
+      ],
+      "timeMin": "2013-05-03T10:00:00.000-07:00",
+      "timeMax": "2013-07-03T10:00:00.000-07:00"
+      }
+      '''
+print body
+print urllib.urlencode(body)
+#print json.dumps(body)
+resp2, freebusycontent = http.request("https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyDfaaRfNmGVgoS7j65djnsqPpA1PK2LYeU", "POST", json.dumps(body),headers={'content-type':'application/json'})
+
+#urllib.urlencode
+#print http.request("https://www.googleapis.com/calendar/v3/freeBusy", "POST", body = json.dumps(body))
+#resp2, freebusycontent = http.request("https://www.googleapis.com/calendar/v3/freeBusy", "POST", body = json.dumps(body))
+#resp2, freebusycontent = http.request("https://www.googleapis.com/calendar/v3/freeBusy", "POST", body)
+print freebusycontent
 #print 'header'
 #print resp
 #print 'content'
