@@ -1,5 +1,6 @@
 import gflags
 import httplib2
+import json
 
 from apiclient.discovery import build
 from oauth2client.file import Storage
@@ -31,9 +32,6 @@ storage = Storage('calendar.dat')
 credentials = storage.get()
 if credentials is None or credentials.invalid == True:
   credentials = run(FLOW, storage)
-#  print 'Hello'
-#else:
-#  print "Go fuck yourself"
 
 # Create an httplib2.Http object to handle our HTTP requests and authorize it
 # with our good Credentials.
@@ -46,18 +44,39 @@ http = credentials.authorize(http)
 service = build(serviceName='calendar', version='v3', http=http,
        developerKey='AIzaSyDfaaRfNmGVgoS7j65djnsqPpA1PK2LYeU')
 #print 'Hello'
-event = {
-  'summary': 'Appointment',
-  'location': 'Somewhere',
-  'start': {
-    'dateTime': '2013-06-03T10:00:00.000-07:00'
-  },
-  'end': {
-    'dateTime': '2013-06-03T10:25:00.000-07:00'
-  }
-}
+#event = {
+#  'summary': 'Appointment',
+#  'location': 'Somewhere',
+#  'start': {
+#    'dateTime': '2013-06-03T10:00:00.000-07:00'
+#  },
+#  'end': {
+#    'dateTime': '2013-06-03T10:25:00.000-07:00'
+#  }
+#}
 
 #created_event = service.events().insert(calendarId='primary', body=event).execute()
-created_event = service.events().insert(calendarId='primary', body=event).execute()
+#created_event = service.events().insert(calendarId='primary', body=event).execute()
+#service.events().
+#calendar = service.calendars().get(calendarId='primary').execute()
+#print calendar['summary']
+#print created_event['id']
 
-print created_event['id']
+#resp, content = http.request("https://www.googleapis.com/calendar/v3/calendars/primary", "GET")
+resp, content = http.request("https://www.googleapis.com/calendar/v3/users/me/calendarList/?key=AIzaSyDfaaRfNmGVgoS7j65djnsqPpA1PK2LYeU", "GET")
+#print content
+#print type(content)
+jsoncontent = json.loads(content)
+#print jsoncontent["items"]
+for ite in jsoncontent['items']:
+	if 'primary' in ite:
+		if ite['primary']:
+			#print ite
+			primaryid=ite['id']
+			break
+
+print primaryid
+#print 'header'
+#print resp
+#print 'content'
+#print content
