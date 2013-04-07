@@ -81,13 +81,13 @@ for ite in jsoncontent['items']:
 			primaryid=ite['id']
 			break
 
-print primaryid
+#print primaryid
 
 
-print 'timeMin'
-print datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")+'.000-07:00'
-print 'timeMax'
-print (datetime.datetime.now() + datetime.timedelta(1*365/12)).strftime("%Y-%m-%dT%H:%M:%S")+'.000-07:00'
+#print 'timeMin'
+#print datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")+'.000-07:00'
+#print 'timeMax'
+#print (datetime.datetime.now() + datetime.timedelta(1*365/12)).strftime("%Y-%m-%dT%H:%M:%S")+'.000-07:00'
 #print 'tzinfo'
 #print datetime.tzinfo.utcoffset(datetime.datetime.now())
 
@@ -173,11 +173,11 @@ for busyevent in freebusycontentjson['calendars'][primaryid]['busy']:
 	#print "https://www.googleapis.com/calendar/v3/calendars/"+primaryid+"/events?timeMax="+thisendtime+"&timeMin="+thisstarttime+"&key=AIzaSyDfaaRfNmGVgoS7j65djnsqPpA1PK2LYeU"
 	#print content3
 	content3json = json.loads(content3)
-	print 'location'
+	#print 'location'
 	location[locationcounter] = ""
 	prevendtime = thisendtime
 	if 'location' in content3json['items'][0]:
-		print content3json['items'][0]['location']
+		#print content3json['items'][0]['location']
 		currentlocation = content3json['items'][0]['location']
 		location[locationcounter] = currentlocation
 	locationcounter = locationcounter + 1
