@@ -2,6 +2,7 @@ import gflags
 import httplib2
 import json
 import urllib
+import datetime
 
 from apiclient.discovery import build
 from oauth2client.file import Storage
@@ -81,14 +82,30 @@ for ite in jsoncontent['items']:
 			break
 
 print primaryid
+
+
+print 'timeMin'
+print datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")+'.000-07:00'
+print 'timeMax'
+print (datetime.datetime.now() + datetime.timedelta(1*365/12)).strftime("%Y-%m-%dT%H:%M:%S")+'.000-07:00'
+#print 'tzinfo'
+#print datetime.tzinfo.utcoffset(datetime.datetime.now())
+
+
 body = {
 	'items': [
 	  {
 		  'id': primaryid
 		       }
 			    ],
-			     'timeMin': '2013-06-03T10:00:00.000-07:00',
-			     'timeMax': '2013-07-03T10:00:00.000-07:00'
+			    # 'timeMin': '2013-06-03T10:00:00.000-07:00',
+			    # 'timeMax': '2013-07-03T10:00:00.000-07:00',
+#			     from datetime import date
+#			     from dateutil.relativedelta import relativedelta
+
+			     #six_months = date.today() + relativedelta( months = +6 )
+			     'timeMin': datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")+'.000-07:00',
+			     'timeMax': (datetime.datetime.now() + datetime.timedelta(1*365/12)).strftime("%Y-%m-%dT%H:%M:%S")+'.000-07:00'
        }
 
 #body = {'timeMin': '2013-06-03T10:00:00.000-07:00'}
@@ -105,8 +122,8 @@ body = {
       "timeMax": "2013-07-03T10:00:00.000-07:00"
       }
       '''
-print body
-print urllib.urlencode(body)
+#print body
+#print urllib.urlencode(body)
 #print json.dumps(body)
 resp2, freebusycontent = http.request("https://www.googleapis.com/calendar/v3/freeBusy?key=AIzaSyDfaaRfNmGVgoS7j65djnsqPpA1PK2LYeU", "POST", json.dumps(body),headers={'content-type':'application/json'})
 
@@ -114,8 +131,58 @@ resp2, freebusycontent = http.request("https://www.googleapis.com/calendar/v3/fr
 #print http.request("https://www.googleapis.com/calendar/v3/freeBusy", "POST", body = json.dumps(body))
 #resp2, freebusycontent = http.request("https://www.googleapis.com/calendar/v3/freeBusy", "POST", body = json.dumps(body))
 #resp2, freebusycontent = http.request("https://www.googleapis.com/calendar/v3/freeBusy", "POST", body)
-print freebusycontent
+#print "333"
+#print freebusycontent
 #print 'header'
 #print resp
 #print 'content'
 #print content
+freebusycontentjson=json.loads(freebusycontent)
+location = {}
+locationcounter = 0
+prevendtime = ''
+freeperiod = {}
+freeperiodcounter = 0
+#print "222"
+#print freebusycontentjson['calendars'][primaryid]['busy']
+for busyevent in freebusycontentjson['calendars'][primaryid]['busy']:
+	#print locationcounter
+	#print 'busyevent '
+	#print busyevent
+	#busyevent=json.loads(busyevent)
+	#print busyevent
+	thisstarttime = busyevent["start"]
+	thisstarttime = thisstarttime.replace(':','%3A')
+	freeperiod[freeperiodcounter] = -1
+	from datetime import datetime
+	from time import strptime
+	if prevendtime != '':
+		#print "111"
+		#print(thisstarttime.replace('%3A',':'))
+		thisstarttimedatetime =	datetime(*strptime(thisstarttime.replace('%3A',':')[:-1], "%Y-%m-%dT%H:%M:%S")[0:6])
+		prevendtimedatetime = datetime(*strptime(prevendtime.replace('%3A',':')[:-1], "%Y-%m-%dT%H:%M:%S")[0:6])
+		freeperiod[freeperiodcounter] = (thisstarttimedatetime-prevendtimedatetime).total_seconds()
+	freeperiodcounter = freeperiodcounter + 1
+	#print thisstarttime
+	#thisstarttime = urllib.quote(thisstarttime, safe=":/")
+	thisendtime = busyevent["end"]
+	thisendtime = thisendtime.replace(':','%3A')
+	#thisendtime = urllib.quote(thisendtime, safe=":/")
+	#print 'thisstarttime '+urllib.urlencode(thisstarttime)
+	resp3, content3 = http.request("https://www.googleapis.com/calendar/v3/calendars/"+primaryid+"/events?timeMax="+thisendtime+"&timeMin="+thisstarttime+"&key=AIzaSyDfaaRfNmGVgoS7j65djnsqPpA1PK2LYeU", "GET")
+	#print "https://www.googleapis.com/calendar/v3/calendars/"+primaryid+"/events?timeMax="+thisendtime+"&timeMin="+thisstarttime+"&key=AIzaSyDfaaRfNmGVgoS7j65djnsqPpA1PK2LYeU"
+	#print content3
+	content3json = json.loads(content3)
+	print 'location'
+	location[locationcounter] = ""
+	prevendtime = thisendtime
+	if 'location' in content3json['items'][0]:
+		print content3json['items'][0]['location']
+		currentlocation = content3json['items'][0]['location']
+		location[locationcounter] = currentlocation
+	locationcounter = locationcounter + 1
+print freeperiod
+print location
+
+		
+
