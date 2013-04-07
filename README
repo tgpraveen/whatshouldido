@@ -1,0 +1,8 @@
+Extracts free timings and locations from Google Calendar.
+
+Dependencies:
+sudo apt-get install python-pip
+pip install Flask
+pip install --upgrade google-api-python-client
+pip install jedi
+pip install urllib
