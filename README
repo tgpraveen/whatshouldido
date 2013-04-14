@@ -1,4 +1,8 @@
-Extracts free timings and locations from Google Calendar.
+DONE:- From your Google Calendar, extracts duration and time when you will be free as well as location, where you will probably 
+be when you are free. 
+
+TO BE DONE:- The idea is to use this information, to suggest things for you to do, probably based on your 
+Facebook Likes (Restaurants, Places, Attractions), Audio listening habits (nearby concerts), etc.
 
 Dependencies:
 sudo apt-get install python-pip
